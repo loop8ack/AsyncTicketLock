@@ -1,0 +1,37 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)..\..\artifacts\$(Configuration)</PackageOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Loop8ack.AsyncTicketLock</PackageId>
+    <Title>$(PackageId)</Title>
+    <PackageVersion>$(Version)</PackageVersion>
+    <Authors>Loop8ack</Authors>
+    <Description>An asynchronous class that functions as a lock based on provided ticket objects instead of the current thread.</Description>
+    <Copyright>Copyright (c) $([System.DateTime]::Now.ToString('yyyy')) Loop8ack</Copyright>
+    <PackageProjectUrl>https://github.com/loop8ack/AsyncTicketLock</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>async;ticket;lock;thread;synchronization;task</PackageTags>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  
+</Project>
