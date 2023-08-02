@@ -1,0 +1,2 @@
+v1.1.0
+- Added support for MaxEnteredCount parameter: Users can now limit the number of times a ticket object can enter the lock.

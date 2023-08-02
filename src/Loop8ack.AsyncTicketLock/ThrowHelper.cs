@@ -5,7 +5,7 @@ namespace Loop8ack.AsyncTicketLock;
 
 internal static class ThrowHelper
 {
-    public static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression("argument")] string? parameterName = null)
+    public static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? parameterName = null)
     {
         if (argument is null)
             throw new ArgumentNullException(parameterName);

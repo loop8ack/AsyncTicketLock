@@ -1,4 +1,4 @@
-### Loop8ack.AsyncTicketLock
+# Loop8ack.AsyncTicketLock
 
 [![Nuget](https://img.shields.io/nuget/v/Loop8ack.AsyncTicketLock)](https://www.nuget.org/packages/Loop8ack.AsyncTicketLock)
 
@@ -83,3 +83,31 @@ await ticketLock.EnterAsync(ticket1);
 // TimeoutException after one second
 await ticketLock.EnterAsync(ticket2, TimeSpan.FromSeconds(1));
 ```
+
+### With maximum entered count
+
+```csharp
+var ticketLock = new AsyncTicketLock(3);
+var ticket = new object();
+
+ticketLock.TryEnter(ticket); // true
+ticketLock.TryEnter(ticket); // true
+ticketLock.TryEnter(ticket); // true
+ticketLock.TryEnter(ticket); // false
+
+ticketLock.Release(ticket, 2);
+
+ticketLock.TryEnter(ticket); // true
+ticketLock.TryEnter(ticket); // true
+ticketLock.TryEnter(ticket); // false
+```
+
+## Release Notes
+
+### 1.1.0
+
+- Added support for `MaxEnteredCount` parameter: Users can now limit the number of times a ticket object can enter the lock.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

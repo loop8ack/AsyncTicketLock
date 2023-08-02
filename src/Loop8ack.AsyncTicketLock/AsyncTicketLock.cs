@@ -14,13 +14,31 @@ namespace Loop8ack.AsyncTicketLock;
 /// </remarks>
 public sealed class AsyncTicketLock : IDisposable
 {
-    private readonly Channel<State> _channel = Channel.CreateBounded<State>(capacity: 1);
-    private readonly State _state = new();
+    private readonly Channel<State> _channel;
+    private readonly State _state;
 
     /// <summary>
     ///     Gets a value indicating whether the instance has been disposed.
     /// </summary>
     public bool IsDisposed { get; private set; }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="AsyncTicketLock"/> class.
+    /// </summary>
+    public AsyncTicketLock()
+        : this(int.MaxValue)
+    {
+    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="AsyncTicketLock"/> class, specifying
+    ///     the maximum number of requests that can be granted for a ticket concurrently.
+    /// </summary>
+    /// <param name="maximumCount">The maximum number of requests that can be granted for a ticket concurrently.</param>
+    public AsyncTicketLock(int maximumCount)
+    {
+        _channel = Channel.CreateBounded<State>(capacity: 1);
+        _state = new(maximumCount);
+    }
 
     /// <summary>
     ///     Requests access to the lock for the specified <paramref name="ticket"/>.
@@ -130,11 +148,7 @@ public sealed class AsyncTicketLock : IDisposable
             if (_channel.Reader.TryPeek(out State? state) && state.Ticket is not null)
             {
                 if (ReferenceEquals(ticket, state.Ticket))
-                {
-                    state.IncrementEnteredCount();
-
-                    return true;
-                }
+                    return state.TryIncrementEnteredCount();
 
                 return false;
             }
@@ -282,6 +296,11 @@ public sealed class AsyncTicketLock : IDisposable
     [DebuggerDisplay($"EnteredCount: {{{nameof(EnteredCount)},nq}}, UserState: {{{nameof(Ticket)},nq}}")]
     private sealed class State
     {
+        private readonly int _maximumCount;
+
+        public State(int maximumCount)
+            => _maximumCount = maximumCount;
+
         public object? Ticket { get; private set; }
         public int EnteredCount { get; private set; }
 
@@ -291,7 +310,15 @@ public sealed class AsyncTicketLock : IDisposable
             EnteredCount = 1;
         }
 
-        public int IncrementEnteredCount() => ++EnteredCount;
+        public bool TryIncrementEnteredCount()
+        {
+            if (EnteredCount >= _maximumCount)
+                return false;
+
+            EnteredCount++;
+
+            return true;
+        }
         public int DecrementEnteredCount(int count)
         {
             EnteredCount -= count;
